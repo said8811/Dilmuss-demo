@@ -384,9 +384,15 @@ function placeOrder(){
     pay:$('fPay').value, note:$('fNote').value.trim(),
     items:cart.map(i=>({id:i.id,name:P(i.id).name.uz,size:i.size,color:i.color!=null&&P(i.id).colors?P(i.id).colors[i.color].uz:null,qty:i.qty,price:P(i.id).price})),
     goods:s.goods, delivery:s.del, total:s.total};
-  orders.push(order); cart=[]; save();
+  orders.push(order);
   $('doneP').textContent=t('doneP').replace('{n}',n);
-  if(inTG){ try{tg.HapticFeedback.notificationOccurred('success')}catch(e){}; tg.sendData(JSON.stringify(order)); }
+  if(!inTG || (tg.initDataUnsafe && tg.initDataUnsafe.query_id)){
+    alert(lang==='ru' ? "Заказ не отправлен: откройте магазин кнопкой «🛍 Магазин» внизу чата с ботом (после /start), а не по ссылке или кнопке меню." : "Buyurtma yuborilmadi: do'konni bot chatining pastidagi «🛍 Do'kon» tugmasi orqali oching (/start dan keyin), havola yoki menyu tugmasi orqali emas.");
+    orders.pop(); save(); return;
+  }
+  try{tg.HapticFeedback.notificationOccurred('success')}catch(e){}
+  cart=[]; save();
+  tg.sendData(JSON.stringify(order));
   history=['home']; go('done',false);
 }
 document.querySelectorAll("[data-img]").forEach(e=>e.src=IMG[e.dataset.img]);
