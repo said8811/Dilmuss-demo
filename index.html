@@ -272,9 +272,9 @@ const T = {
 
 /* ====== STATE ====== */
 const tg = window.Telegram && Telegram.WebApp;
-const inTG = !!(tg && tg.initData);
+const inTG = !!(tg && tg.platform && tg.platform !== 'unknown');
 if (tg){ tg.ready(); tg.expand(); try{tg.setHeaderColor('#ffffff');tg.setBackgroundColor('#ffffff')}catch(e){} }
-let lang = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code==='ru') ? 'ru' : 'uz';
+let lang = new URLSearchParams(location.search).get('lang')==='ru' ? 'ru' : 'uz';
 let cat='all', cart=[], fav=new Set(), orders=[], cur=null, selSize=null, selColor=0, method='delivery', history=['home'];
 const store = {get(k,d){try{return JSON.parse(localStorage.getItem('dm_'+k))??d}catch(e){return d}}, set(k,v){try{localStorage.setItem('dm_'+k,JSON.stringify(v))}catch(e){}}};
 cart = store.get('cart',[]); fav = new Set(store.get('fav',[])); orders = store.get('orders',[]);
