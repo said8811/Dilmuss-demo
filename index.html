@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>DILMUSS</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--pink:#D86487;--pink-d:#C24E73;--pink-l:#FBE9EF;--ink:#1C1B1F;--mute:#8A8790;--line:#EEEAEE;--bg:#FFFFFF;--soft:#F7F5F7}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;padding-bottom:84px}
+button{font:inherit;border:0;background:none;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit}
+img{display:block}
+.screen{display:none}.screen.on{display:block}
+/* header */
+.top{position:sticky;top:0;z-index:5;background:#fff;padding:12px 16px 10px}
+.brand{display:flex;align-items:center;justify-content:space-between}
+.brand-l{display:flex;align-items:center;gap:10px}
+.brand-l img{width:36px;height:36px;border-radius:10px}
+.brand-l b{font-size:19px;letter-spacing:.5px}
+.lang{background:var(--soft);border-radius:999px;padding:7px 12px;font-weight:600;font-size:13px}
+.search{margin-top:12px;display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:14px;padding:11px 14px;color:var(--mute)}
+.search input{border:0;background:none;outline:none;flex:1;color:var(--ink)}
+/* banner */
+.banner{margin:6px 16px 0;border-radius:20px;overflow:hidden;position:relative;height:170px;background:linear-gradient(120deg,#F6E3D6,#EBD3C4)}
+.banner img{position:absolute;right:0;top:0;height:100%;width:52%;object-fit:cover;object-position:top}
+.banner .t{position:absolute;left:16px;top:20px;width:44%}
+.banner h2{font-size:20px;line-height:1.15}
+.banner p{font-size:13px;color:#6b5c55;margin-top:6px}
+.banner .go{margin-top:12px;display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600}
+.dots{display:flex;gap:5px;justify-content:center;margin-top:8px}.dots i{width:6px;height:6px;border-radius:9px;background:var(--line)}.dots i.a{width:16px;background:var(--pink)}
+.ship{display:flex;align-items:center;gap:8px;margin:12px 16px 0;font-size:13px;color:var(--mute)}
+.ship span{color:var(--pink)}
+/* categories */
+.cats{display:flex;gap:14px;overflow-x:auto;padding:14px 16px 4px;scrollbar-width:none}.cats::-webkit-scrollbar{display:none}
+.cat{flex:none;width:72px;text-align:center;font-size:12px}
+.cat .c{width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--pink-l);border:2px solid transparent}
+.cat.a .c{border-color:var(--pink)}
+.cat img{width:100%;height:100%;object-fit:cover;object-position:top}
+.cat div:last-child{margin-top:6px}
+.sec{display:flex;justify-content:space-between;align-items:center;padding:18px 16px 10px}
+.sec h3{font-size:18px}.sec a{color:var(--pink);font-size:13px;font-weight:600}
+/* grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px}
+.card{position:relative}
+.card .ph{position:relative;border-radius:16px;overflow:hidden;background:var(--soft);aspect-ratio:3/4}
+.card .ph img{width:100%;height:100%;object-fit:cover;object-position:top}
+.heart{position:absolute;right:8px;top:8px;width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.heart.on svg{fill:var(--pink);stroke:var(--pink)}
+.badge{position:absolute;left:8px;top:8px;background:var(--pink);color:#fff;font-size:11px;font-weight:700;border-radius:8px;padding:3px 7px}
+.badge.sale{background:var(--ink)}
+.card .nm{font-size:13px;margin-top:8px;line-height:1.3;height:34px;overflow:hidden}
+.price{font-weight:700;margin-top:4px}
+.old{color:var(--mute);text-decoration:line-through;font-weight:400;font-size:12px;margin-left:6px}
+.add{position:absolute;right:6px;bottom:6px;width:34px;height:34px;border-radius:12px;background:var(--pink);color:#fff;font-size:22px;line-height:34px;text-align:center}
+/* product */
+.pback{position:fixed;top:12px;left:12px;z-index:6;width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.pimg{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:top;background:var(--soft)}
+.pbody{padding:16px}
+.pbody h1{font-size:20px;line-height:1.25}
+.pbody .price{font-size:22px;margin-top:8px}
+.lbl{margin-top:18px;font-size:13px;color:var(--mute);font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{min-width:48px;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;font-weight:600;text-align:center}
+.chip.a{border-color:var(--pink);background:var(--pink-l);color:var(--pink-d)}
+.desc{margin-top:16px;color:#55525a;line-height:1.5;font-size:14px}
+.info{margin-top:14px;background:var(--soft);border-radius:14px;padding:12px 14px;font-size:13px;color:#55525a;line-height:1.7}
+/* bottom bar / buttons */
+.cta{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:10px 16px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);z-index:7}
+.btn{width:100%;background:var(--pink);color:#fff;border-radius:16px;padding:15px;font-weight:700;font-size:16px}
+.btn:active{background:var(--pink-d)}
+.btn.ghost{background:var(--pink-l);color:var(--pink-d)}
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:6}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--mute);position:relative}
+.nav button.a{color:var(--pink)}
+.nav svg{width:24px;height:24px}
+.cnt{position:absolute;top:-2px;left:52%;background:var(--pink);color:#fff;font-size:10px;font-weight:700;border-radius:9px;padding:1px 6px;display:none}
+/* cart */
+.ph-title{display:flex;justify-content:space-between;align-items:center;padding:16px}
+.ph-title h2{font-size:22px}.ph-title button{color:var(--pink);font-size:14px;font-weight:600}
+.row{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.row img{width:76px;height:96px;border-radius:12px;object-fit:cover;object-position:top}
+.row .m{flex:1;min-width:0}
+.row .s{font-size:12px;color:var(--mute);margin-top:3px}
+.row .bot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.qty{display:flex;align-items:center;background:var(--soft);border-radius:999px}
+.qty button{width:32px;height:32px;font-size:18px}
+.qty span{min-width:20px;text-align:center;font-weight:600}
+.sum{margin:16px;background:var(--soft);border-radius:16px;padding:14px 16px}
+.sum div{display:flex;justify-content:space-between;padding:4px 0;font-size:14px;color:#55525a}
+.sum .tot{font-size:17px;color:var(--ink);font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:10px}
+.free{color:#2E9E5B;font-weight:600}
+.empty{text-align:center;color:var(--mute);padding:70px 30px}
+.empty .e{font-size:44px;margin-bottom:10px}
+/* form */
+.form{padding:0 16px}
+.form label{display:block;font-size:13px;color:var(--mute);font-weight:600;margin:14px 0 6px}
+.form input,.form select,.form textarea{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;outline:none;background:#fff}
+.form input:focus,.form textarea:focus,.form select:focus{border-color:var(--pink)}
+.seg{display:flex;background:var(--soft);border-radius:14px;padding:4px}
+.seg button{flex:1;padding:10px;border-radius:11px;font-weight:600;font-size:14px;color:var(--mute)}
+.seg button.a{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.err{color:#D93A3A;font-size:13px;margin-top:10px;display:none}
+/* orders */
+.ord{margin:0 16px 12px;border:1px solid var(--line);border-radius:16px;padding:14px}
+.ord .h{display:flex;justify-content:space-between;font-weight:700}
+.st{font-size:12px;background:#FFF4D6;color:#9A6B00;border-radius:8px;padding:3px 8px;font-weight:600}
+.ord .l{font-size:13px;color:#55525a;margin-top:8px;line-height:1.6}
+/* success */
+.done{text-align:center;padding:80px 30px}
+.done .ok{width:84px;height:84px;border-radius:50%;background:var(--pink-l);display:grid;place-items:center;margin:0 auto 18px;font-size:40px}
+.done h2{font-size:22px}.done p{color:var(--mute);margin-top:8px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;z-index:20;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.demo{font-size:11px;color:var(--mute);text-align:center;padding:18px 16px 0}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<section class="screen on" id="s-home">
+  <div class="top">
+    <div class="brand">
+      <div class="brand-l"><img src="img/logo.jpg" alt=""><b>DILMUSS</b></div>
+      <button class="lang" onclick="toggleLang()" id="langBtn">RU</button>
+    </div>
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" data-ph="search" oninput="renderHome()">
+    </div>
+  </div>
+  <div class="banner" onclick="openCat('outer')">
+    <img src="img/coat-brown.jpg" alt="">
+    <div class="t"><h2 data-t="bannerT"></h2><p data-t="bannerS"></p><span class="go" data-t="bannerB"></span></div>
+  </div>
+  <div class="dots"><i class="a"></i><i></i><i></i></div>
+  <div class="ship">🚚 <div data-t="ship"></div></div>
+  <div class="cats" id="cats"></div>
+  <div class="sec"><h3 id="secTitle"></h3><a onclick="openCat('all')" data-t="all"></a></div>
+  <div class="grid" id="grid"></div>
+  <div class="demo" data-t="demo"></div>
+</section>
+
+<!-- PRODUCT -->
+<section class="screen" id="s-product">
+  <button class="pback" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <img class="pimg" id="pImg" alt="">
+  <div class="pbody">
+    <h1 id="pName"></h1>
+    <div class="price" id="pPrice"></div>
+    <div id="pColorsWrap"><div class="lbl" data-t="color"></div><div class="chips" id="pColors"></div></div>
+    <div class="lbl" data-t="size"></div>
+    <div class="chips" id="pSizes"></div>
+    <div class="desc" id="pDesc"></div>
+    <div class="info" data-t="pinfo"></div>
+  </div>
+  <div style="height:80px"></div>
+  <div class="cta"><button class="btn" onclick="addFromProduct()" data-t="toCart"></button></div>
+</section>
+
+<!-- CART -->
+<section class="screen" id="s-cart">
+  <div class="ph-title"><h2 data-t="cart"></h2><button onclick="clearCart()" id="clearBtn" data-t="clear"></button></div>
+  <div id="cartList"></div>
+  <div id="cartSum"></div>
+  <div style="padding:0 16px" id="cartBtnWrap"><button class="btn" onclick="go('checkout')" data-t="checkout"></button></div>
+</section>
+
+<!-- CHECKOUT -->
+<section class="screen" id="s-checkout">
+  <div class="ph-title"><h2 data-t="checkoutT"></h2></div>
+  <div class="form">
+    <label data-t="name"></label><input id="fName" autocomplete="name">
+    <label data-t="phone"></label><input id="fPhone" type="tel" placeholder="+998 __ ___ __ __" autocomplete="tel">
+    <label data-t="method"></label>
+    <div class="seg"><button class="a" id="mDel" onclick="setMethod('delivery')" data-t="delivery"></button><button id="mPick" onclick="setMethod('pickup')" data-t="pickup"></button></div>
+    <div id="addrWrap"><label data-t="address"></label><textarea id="fAddr" rows="2"></textarea></div>
+    <div id="branchWrap" style="display:none"><label data-t="branch"></label>
+      <select id="fBranch"><option>Chilonzor filiali</option><option>Yunusobod filiali</option><option>Sergeli filiali</option></select></div>
+    <label data-t="pay"></label>
+    <select id="fPay"><option value="cash" data-t="cash"></option><option value="card" data-t="card"></option></select>
+    <label data-t="note"></label><input id="fNote">
+    <div class="err" id="fErr" data-t="errFill"></div>
+  </div>
+  <div id="coSum"></div>
+  <div style="height:80px"></div>
+  <div class="cta"><button class="btn" onclick="placeOrder()" id="placeBtn"></button></div>
+</section>
+
+<!-- DONE -->
+<section class="screen" id="s-done">
+  <div class="done"><div class="ok">✓</div><h2 data-t="doneT"></h2><p id="doneP"></p><br><button class="btn ghost" onclick="goHome()" data-t="backHome"></button></div>
+</section>
+
+<!-- FAVORITES -->
+<section class="screen" id="s-fav"><div class="ph-title"><h2 data-t="fav"></h2></div><div class="grid" id="favGrid"></div></section>
+
+<!-- ORDERS -->
+<section class="screen" id="s-orders"><div class="ph-title"><h2 data-t="orders"></h2></div><div id="ordList"></div></section>
+
+<nav class="nav" id="nav">
+  <button data-go="home" class="a" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span data-t="home"></span></button>
+  <button data-go="catalog" onclick="openCat('all','catalog')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span data-t="catalog"></span></button>
+  <button data-go="cart" onclick="go('cart')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span data-t="cart"></span><i class="cnt" id="cnt"></i></button>
+  <button data-go="fav" onclick="go('fav')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span data-t="fav"></span></button>
+  <button data-go="orders" onclick="go('orders')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span data-t="orders"></span></button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ====== EDIT PRODUCTS HERE ====== */
+const PRODUCTS = [
+  {id:1, cat:'sets', img:'img/set-brown.jpg', price:459000, old:null, badge:'new',
+   name:{uz:"Kuzgi to'plam: sviter + ko'ylak + jinsi", ru:"Осенний комплект: свитер + рубашка + джинсы"},
+   desc:{uz:"Oversize trikotaj sviter, havorang ko'ylak va keng jinsi shim. Kundalik va o'qish uchun qulay to'plam.", ru:"Свитер оверсайз, голубая рубашка и широкие джинсы. Удобный комплект на каждый день."},
+   sizes:['S','M','L','XL']},
+  {id:2, cat:'outer', img:'img/trench.jpg', price:549000, old:649000, badge:'sale',
+   name:{uz:"Eko-charm trench, karamel", ru:"Тренч из эко-кожи, карамель"},
+   desc:{uz:"Ikki qatorli tugmali, kamarli kalta trench. Kuz uchun ideal.", ru:"Двубортный укороченный тренч с поясом. Идеален для осени."},
+   sizes:['S','M','L']},
+  {id:3, cat:'outer', img:'img/coat-black.jpg', price:799000, old:null, badge:'new',
+   name:{uz:"Uzun klassik palto", ru:"Длинное классическое пальто"},
+   desc:{uz:"Ikki qatorli uzun palto, ichidagi kalta kurtka bilan birga. Issiq va zamonaviy.", ru:"Длинное двубортное пальто с укороченной курткой в комплекте. Тёплое и стильное."},
+   colors:[{uz:'Qora',ru:'Чёрный',img:'img/coat-black.jpg'},{uz:'Jigarrang',ru:'Коричневый',img:'img/coat-brown.jpg'}],
+   sizes:['S','M','L','XL']},
+  {id:4, cat:'sweaters', img:'img/bow-sweater.jpg', price:289000, old:null, badge:null,
+   name:{uz:"Bantikli trikotaj sviter", ru:"Свитер с бантиками"},
+   desc:{uz:"Yumshoq oq sviter, qora bantik va marvarid bezaklari bilan.", ru:"Мягкий белый свитер с чёрными бантиками и жемчужинами."},
+   sizes:['S','M','L']},
+  {id:5, cat:'sets', img:'img/pink-vest.jpg', price:489000, old:null, badge:'new',
+   name:{uz:"Pushti jilet + kostyum to'plami", ru:"Розовый жилет + костюм"},
+   desc:{uz:"Pushti puxovik jilet va krem rangli sport kostyum. Yengil va issiq.", ru:"Розовый пуховый жилет и костюм кремового цвета. Лёгкий и тёплый."},
+   sizes:['S','M','L','XL']},
+];
+const CATS = [
+  {id:'all', img:'img/logo.jpg', uz:'Hammasi', ru:'Все'},
+  {id:'outer', img:'img/trench.jpg', uz:'Ustki kiyim', ru:'Верхняя одежда'},
+  {id:'sweaters', img:'img/bow-sweater.jpg', uz:'Sviterlar', ru:'Свитеры'},
+  {id:'sets', img:'img/set-brown.jpg', uz:"To'plamlar", ru:'Комплекты'},
+];
+const FREE_FROM = 500000, DELIVERY = 25000;
+
+const T = {
+ uz:{search:"Kiyim qidirish...",bannerT:"Kuz-qish kolleksiyasi",bannerS:"Yangi paltolar allaqachon do'konda",bannerB:"Ko'rish",
+  ship:"<span>500 000 so'm</span>dan bepul yetkazib berish",all:"Hammasi",popular:"Mashhur",demo:"Demo versiya · narxlar namunaviy",
+  color:"Rang",size:"O'lcham",pinfo:"🚚 Toshkent bo'ylab 1 kunda yetkazib berish<br>🏬 Filialdan bepul olib ketish<br>↩️ 3 kun ichida almashtirish",
+  toCart:"Savatga qo'shish",cart:"Savat",clear:"Tozalash",checkout:"Rasmiylashtirish",checkoutT:"Buyurtma berish",
+  name:"Ismingiz",phone:"Telefon raqam",method:"Qabul qilish usuli",delivery:"Yetkazib berish",pickup:"Filialdan olish",
+  address:"Manzil",branch:"Filial",pay:"To'lov usuli",cash:"Naqd / qabul qilganda",card:"Click / Payme",note:"Izoh (ixtiyoriy)",
+  errFill:"Ism, telefon va manzilni to'ldiring",place:"Buyurtma berish",doneT:"Buyurtma qabul qilindi!",
+  doneP:"Buyurtma #{n} do'konga yuborildi. Menejer tez orada siz bilan bog'lanadi.",backHome:"Bosh sahifaga",
+  fav:"Sevimlilar",orders:"Buyurtmalar",home:"Bosh sahifa",catalog:"Katalog",goods:"Mahsulotlar",deliv:"Yetkazib berish",
+  free:"bepul",total:"Jami",emptyCart:"Savat bo'sh",emptyFav:"Sevimlilar hali yo'q",emptyOrd:"Buyurtmalar hali yo'q",
+  added:"Savatga qo'shildi",pickSize:"O'lchamni tanlang",status:"Ko'rib chiqilmoqda",sum:"so'm",
+  catTitle:{all:"Barcha mahsulotlar",outer:"Ustki kiyim",sweaters:"Sviterlar",sets:"To'plamlar"},newB:"Yangi",saleB:"Chegirma"},
+ ru:{search:"Поиск одежды...",bannerT:"Коллекция осень-зима",bannerS:"Новые пальто уже в магазине",bannerB:"Смотреть",
+  ship:"Бесплатная доставка от <span>500 000 сум</span>",all:"Все",popular:"Популярное",demo:"Демо-версия · цены примерные",
+  color:"Цвет",size:"Размер",pinfo:"🚚 Доставка по Ташкенту за 1 день<br>🏬 Бесплатный самовывоз из филиала<br>↩️ Обмен в течение 3 дней",
+  toCart:"В корзину",cart:"Корзина",clear:"Очистить",checkout:"Оформить",checkoutT:"Оформление заказа",
+  name:"Ваше имя",phone:"Телефон",method:"Способ получения",delivery:"Доставка",pickup:"Самовывоз",
+  address:"Адрес",branch:"Филиал",pay:"Оплата",cash:"Наличными при получении",card:"Click / Payme",note:"Комментарий (необязательно)",
+  errFill:"Заполните имя, телефон и адрес",place:"Оформить заказ",doneT:"Заказ принят!",
+  doneP:"Заказ #{n} отправлен в магазин. Менеджер скоро свяжется с вами.",backHome:"На главную",
+  fav:"Избранное",orders:"Заказы",home:"Главная",catalog:"Каталог",goods:"Товары",deliv:"Доставка",
+  free:"бесплатно",total:"Итого",emptyCart:"Корзина пуста",emptyFav:"В избранном пока пусто",emptyOrd:"Заказов пока нет",
+  added:"Добавлено в корзину",pickSize:"Выберите размер",status:"На рассмотрении",sum:"сум",
+  catTitle:{all:"Все товары",outer:"Верхняя одежда",sweaters:"Свитеры",sets:"Комплекты"},newB:"Новинка",saleB:"Скидка"}
+};
+
+/* ====== STATE ====== */
+const tg = window.Telegram && Telegram.WebApp;
+const inTG = !!(tg && tg.initData);
+if (tg){ tg.ready(); tg.expand(); try{tg.setHeaderColor('#ffffff');tg.setBackgroundColor('#ffffff')}catch(e){} }
+let lang = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code==='ru') ? 'ru' : 'uz';
+let cat='all', cart=[], fav=new Set(), orders=[], cur=null, selSize=null, selColor=0, method='delivery', history=['home'];
+const store = {get(k,d){try{return JSON.parse(localStorage.getItem('dm_'+k))??d}catch(e){return d}}, set(k,v){try{localStorage.setItem('dm_'+k,JSON.stringify(v))}catch(e){}}};
+cart = store.get('cart',[]); fav = new Set(store.get('fav',[])); orders = store.get('orders',[]);
+const save=()=>{store.set('cart',cart);store.set('fav',[...fav]);store.set('orders',orders)};
+
+const t = k => T[lang][k];
+const money = n => n.toLocaleString('ru-RU').replace(/,/g,' ') + ' ' + t('sum');
+const P = id => PRODUCTS.find(p=>p.id===id);
+const $ = id => document.getElementById(id);
+const heartSvg = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C1B1F" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
+
+function applyLang(){
+  document.querySelectorAll('[data-t]').forEach(el=>{const v=t(el.dataset.t); if(typeof v==='string') el.innerHTML=v});
+  document.querySelectorAll('[data-ph]').forEach(el=>el.placeholder=t(el.dataset.ph));
+  $('langBtn').textContent = lang==='uz'?'RU':'UZ';
+  $('placeBtn').textContent = t('place');
+  renderAll();
+}
+function toggleLang(){lang = lang==='uz'?'ru':'uz'; applyLang()}
+function haptic(type){try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(type||'light')}catch(e){}}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1600)}
+
+/* ====== NAV ====== */
+function go(s, push=true){
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));
+  $('s-'+s).classList.add('on');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('a', b.dataset.go===(s==='home'?curTab:s)));
+  $('nav').style.display = ['product','checkout','done'].includes(s)?'none':'flex';
+  if(push && history[history.length-1]!==s) history.push(s);
+  if(tg && tg.BackButton){ (s==='home'&&history.length<=1) ? tg.BackButton.hide() : tg.BackButton.show(); }
+  renderAll(); window.scrollTo(0,0);
+}
+let curTab='home';
+function back(){ history.pop(); const p=history[history.length-1]||'home'; if(p==='home'||p==='catalog') go('home',false); else go(p,false); }
+if(tg && tg.BackButton) tg.BackButton.onClick(back);
+function openCat(c,tab){cat=c; curTab = tab || (c==='all'?curTab:'catalog'); history=['home']; go('home',false); if(curTab==='catalog') document.querySelector('.sec').scrollIntoView({behavior:'smooth'})}
+function goHome(){cat='all';curTab='home';$('q').value='';history=['home'];go('home',false)}
+
+/* ====== RENDER ====== */
+function card(p){
+  const b = p.badge==='new'?`<span class="badge">${t('newB')}</span>`:p.badge==='sale'?`<span class="badge sale">-${Math.round((1-p.price/p.old)*100)}%</span>`:'';
+  return `<div class="card"><div class="ph" onclick="openProduct(${p.id})"><img src="${p.img}" loading="lazy" alt="">${b}
+    <button class="heart ${fav.has(p.id)?'on':''}" onclick="event.stopPropagation();toggleFav(${p.id})">${heartSvg}</button>
+    <button class="add" onclick="event.stopPropagation();openProduct(${p.id})">+</button></div>
+    <div class="nm" onclick="openProduct(${p.id})">${p.name[lang]}</div>
+    <div class="price">${money(p.price)}${p.old?`<span class="old">${money(p.old)}</span>`:''}</div></div>`;
+}
+function renderHome(){
+  $('cats').innerHTML = CATS.map(c=>`<div class="cat ${cat===c.id?'a':''}" onclick="openCat('${c.id}')"><div class="c"><img src="${c.img}" alt=""></div><div>${c[lang]}</div></div>`).join('');
+  const q = ($('q').value||'').toLowerCase().trim();
+  let list = PRODUCTS.filter(p=>(cat==='all'||p.cat===cat) && (!q || p.name.uz.toLowerCase().includes(q) || p.name.ru.toLowerCase().includes(q)));
+  $('secTitle').textContent = cat==='all' ? t('popular') : t('catTitle')[cat];
+  $('grid').innerHTML = list.length ? list.map(card).join('') : `<div class="empty" style="grid-column:1/-1">—</div>`;
+}
+function renderCart(){
+  const n = cart.reduce((a,i)=>a+i.qty,0);
+  const c=$('cnt'); c.textContent=n; c.style.display=n?'block':'none';
+  if(!cart.length){$('cartList').innerHTML=`<div class="empty"><div class="e">🛍️</div>${t('emptyCart')}</div>`;$('cartSum').innerHTML='';$('cartBtnWrap').style.display='none';$('clearBtn').style.display='none';return}
+  $('cartBtnWrap').style.display='block';$('clearBtn').style.display='block';
+  $('cartList').innerHTML = cart.map((i,k)=>{const p=P(i.id);return `<div class="row"><img src="${i.img||p.img}" alt=""><div class="m">
+    <div style="font-size:14px;line-height:1.3">${p.name[lang]}</div><div class="s">${t('size')}: ${i.size}${i.color!=null&&p.colors?' · '+p.colors[i.color][lang]:''}</div>
+    <div class="bot"><b>${money(p.price*i.qty)}</b><div class="qty"><button onclick="qty(${k},-1)">−</button><span>${i.qty}</span><button onclick="qty(${k},1)">+</button></div></div></div></div>`}).join('');
+  $('cartSum').innerHTML = sumBox();
+}
+function totals(){const goods=cart.reduce((a,i)=>a+P(i.id).price*i.qty,0);const del=(method==='pickup'||goods>=FREE_FROM)?0:DELIVERY;return{goods,del,total:goods+del,n:cart.reduce((a,i)=>a+i.qty,0)}}
+function sumBox(){const s=totals();return `<div class="sum"><div><span>${t('goods')} (${s.n})</span><span>${money(s.goods)}</span></div>
+  <div><span>${t('deliv')}</span><span class="${s.del?'':'free'}">${s.del?money(s.del):t('free')}</span></div>
+  <div class="tot"><span>${t('total')}</span><span>${money(s.total)}</span></div></div>`}
+function renderFav(){const l=PRODUCTS.filter(p=>fav.has(p.id));$('favGrid').innerHTML=l.length?l.map(card).join(''):`<div class="empty" style="grid-column:1/-1"><div class="e">🤍</div>${t('emptyFav')}</div>`}
+function renderOrders(){$('ordList').innerHTML=orders.length?orders.slice().reverse().map(o=>`<div class="ord"><div class="h"><span>#${o.n}</span><span class="st">${t('status')}</span></div>
+  <div class="l">${o.items.map(i=>`${P(i.id).name[lang]} · ${i.size} × ${i.qty}`).join('<br>')}</div><div class="h" style="margin-top:8px"><span>${t('total')}</span><span>${money(o.total)}</span></div></div>`).join(''):`<div class="empty"><div class="e">📦</div>${t('emptyOrd')}</div>`}
+function renderAll(){renderHome();renderCart();renderFav();renderOrders();$('coSum').innerHTML=cart.length?sumBox():''}
+
+/* ====== ACTIONS ====== */
+function openProduct(id){
+  cur=P(id); selSize=null; selColor=0;
+  $('pImg').src=cur.img; $('pName').textContent=cur.name[lang];
+  $('pPrice').innerHTML=money(cur.price)+(cur.old?`<span class="old">${money(cur.old)}</span>`:'');
+  $('pDesc').textContent=cur.desc[lang];
+  $('pColorsWrap').style.display=cur.colors?'block':'none';
+  if(cur.colors) $('pColors').innerHTML=cur.colors.map((c,k)=>`<button class="chip ${k===0?'a':''}" onclick="pickColor(${k},this)">${c[lang]}</button>`).join('');
+  $('pSizes').innerHTML=cur.sizes.map(s=>`<button class="chip" onclick="pickSize('${s}',this)">${s}</button>`).join('');
+  go('product');
+}
+function pickSize(s,el){selSize=s;el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('a'));el.classList.add('a');haptic()}
+function pickColor(k,el){selColor=k;el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('a'));el.classList.add('a');$('pImg').src=cur.colors[k].img;haptic()}
+function addFromProduct(){
+  if(!selSize){toast(t('pickSize'));try{tg&&tg.HapticFeedback.notificationOccurred('error')}catch(e){};return}
+  const color=cur.colors?selColor:null, img=cur.colors?cur.colors[selColor].img:cur.img;
+  const ex=cart.find(i=>i.id===cur.id&&i.size===selSize&&i.color===color);
+  ex?ex.qty++:cart.push({id:cur.id,size:selSize,color,img,qty:1});
+  save();haptic('medium');toast(t('added'));back();
+}
+function qty(k,d){cart[k].qty+=d;if(cart[k].qty<=0)cart.splice(k,1);save();haptic();renderAll()}
+function clearCart(){cart=[];save();renderAll()}
+function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);save();haptic();renderAll()}
+function setMethod(m){method=m;$('mDel').classList.toggle('a',m==='delivery');$('mPick').classList.toggle('a',m==='pickup');
+  $('addrWrap').style.display=m==='delivery'?'block':'none';$('branchWrap').style.display=m==='pickup'?'block':'none';renderAll()}
+
+function placeOrder(){
+  const name=$('fName').value.trim(), phone=$('fPhone').value.trim(), addr=$('fAddr').value.trim();
+  if(!cart.length) return go('home');
+  if(!name||phone.replace(/\D/g,'').length<9||(method==='delivery'&&!addr)){$('fErr').style.display='block';try{tg&&tg.HapticFeedback.notificationOccurred('error')}catch(e){};return}
+  $('fErr').style.display='none';
+  const s=totals(), n=1000+orders.length+1;
+  const order={n, lang, name, phone, method, address:method==='delivery'?addr:null, branch:method==='pickup'?$('fBranch').value:null,
+    pay:$('fPay').value, note:$('fNote').value.trim(),
+    items:cart.map(i=>({id:i.id,name:P(i.id).name.uz,size:i.size,color:i.color!=null&&P(i.id).colors?P(i.id).colors[i.color].uz:null,qty:i.qty,price:P(i.id).price})),
+    goods:s.goods, delivery:s.del, total:s.total};
+  orders.push(order); cart=[]; save();
+  $('doneP').textContent=t('doneP').replace('{n}',n);
+  if(inTG){ try{tg.HapticFeedback.notificationOccurred('success')}catch(e){}; tg.sendData(JSON.stringify(order)); }
+  history=['home']; go('done',false);
+}
+applyLang();
+</script>
+</body>
+</html>
